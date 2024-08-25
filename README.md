@@ -1,4 +1,5 @@
 # N+1 Query Detector
+To enable the N+1 Query Detector, you need to add the necessary dependency to your project and enable the additional Hibernate statistics by using the `@EnableAdditionalHibernateStatistic` annotation.
 ```xml
 <dependency>
     <groupId>io.github.waldemargr</groupId>
@@ -6,6 +7,14 @@
     <version>1.0.0</version>
 </dependency>
 ```
+```java
+@Configuration
+@EnableAdditionalHibernateStatistic
+public class AppConfig {
+// Your configuration here
+}
+```
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=waldemarGr_n-plus-1-detector&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=waldemarGr_n-plus-1-detector)
 ## Project Overview
 This project is designed to detect N+1 query issues within @Transactional methods in Spring Boot applications. Below is a list of potential optimizations you can consider for your project. The goal is to expand this project to support these best practices in the future.
