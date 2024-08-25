@@ -6,7 +6,7 @@
     <version>1.0.0</version>
 </dependency>
 ```
-
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=waldemarGr_n-plus-1-detector&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=waldemarGr_n-plus-1-detector)
 ## Project Overview
 This project is designed to detect N+1 query issues within @Transactional methods in Spring Boot applications. Below is a list of potential optimizations you can consider for your project. The goal is to expand this project to support these best practices in the future.
 
