@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * It provides the necessary setup to integrate these components into the Spring application context.</p>
  */
 @Configuration
-public class MyAutoConfiguration {
+public class TransactionalStatisticConfiguration {
     /**
      * Creates and configures a {@link SQLStatisticsService} bean.
      *
