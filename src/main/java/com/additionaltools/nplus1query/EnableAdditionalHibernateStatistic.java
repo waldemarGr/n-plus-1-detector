@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation to enable additional Hibernate statistics features.
  *
- * <p>This annotation imports the {@link MyAutoConfiguration} class into the Spring application context,
+ * <p>This annotation imports the {@link TransactionalStatisticConfiguration} class into the Spring application context,
  * which automatically configures beans for enhanced SQL statistics management and transaction monitoring.</p>
  *
  * <p>When this annotation is added to a configuration class, it triggers the registration of
@@ -19,6 +19,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import(MyAutoConfiguration.class)
+@Import(TransactionalStatisticConfiguration.class)
 public @interface EnableAdditionalHibernateStatistic {
 }
