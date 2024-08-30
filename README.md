@@ -1,11 +1,5 @@
 # N+1 Query Detector and HashCode Analysis
 
--Use the `@EnableAdditionalHibernateStatistic` annotation to turn on catching N+1 query problems.
-
--Add the `@EnableHashCodeAnalysis` annotation to kick off hashCode checks. It sets up the system to scan for @Entity
-classes starting from the specified package path. The analysis happens at the bytecode level, so it’ll catch `hashCode`
-issues even in Lombok-generated code, ensuring everything’s up to snuff.
-
 ### Maven Central.
 
 https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
@@ -15,11 +9,12 @@ https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
 <dependency>
     <groupId>io.github.waldemargr</groupId>
     <artifactId>n-plus-1-detector</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=waldemarGr_n-plus-1-detector&metric=bugs)](https://sonarcloud.io/summary/new_code?id=waldemarGr_n-plus-1-detector)
+
 ## Project Overview
 
 ### Current Features
@@ -39,11 +34,21 @@ https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
 - **Implementation:** Use the `@EnableHashCodeAnalysis` annotation to activate the hashCode analysis functionality. This
   annotation triggers a scan for `@Entity` classes starting from the package path specified where you put the
   `@EnableHashCodeAnalysis`. It performs analysis of hashCode methods at the `bytecode` level, ensuring that these
-  methods
-  are based on stable fields and avoiding common mistakes.
+  methods are based on stable fields and avoiding common mistakes.
+
+### Relationship Entity Analysis:
+
+- **Objective:** Identify opportunities for optimizing entity fields in relation to specific relationships, improving
+  performance and memory efficiency.
+- **Implementation:** Use the `@EnableRelationshipAnalysis` annotation to activate relationship entity analysis. This
+  annotation initiates a scan of your `@Entity` classes, starting from the package path
+  where `@EnableRelationshipAnalysis`
+  is applied. It performs a bytecode-level analysis to evaluate how entity fields, particularly collections like List,
+  Set, or Map, are used in relationships, providing recommendations for potential optimizations.
 
 ```java
 
+@EnableRelationshipAnalysis
 @EnableAdditionalHibernateStatistic
 @EnableHashCodeAnalysis
 @SpringBootApplication
@@ -152,7 +157,11 @@ To ensure your application is optimized and free from common Hibernate pitfalls,
     - **Best Practice:** For @Entity classes, implement equals and hashCode methods yourself.
 11. **A key takeaway: Understand Your Logs**
     - Read the logs and understand what they mean. This library simply analyzes the logs and identifies issues if they
-      arise. You can achieve the same result by analyzing and understanding Hibernate logs yourself."
+      arise. You can achieve the same result by analyzing and understanding Hibernate logs yourself.
+    ```property
+    logging.level.org.hibernate.SQL=debug
+    logging.level.org.hibernate.orm.jdbc.bind=trace
+    ```
 
 //todo
 Dirty checking/ cache 1lvl/ and save / flush

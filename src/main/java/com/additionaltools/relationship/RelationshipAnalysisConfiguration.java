@@ -10,9 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Set;
 
-/**
- * Configuration class to set up HashCodeAnalysis based on @EnableHashCodeAnalysis annotation.
- */
+
 @Configuration
 public class RelationshipAnalysisConfiguration {
 

@@ -12,7 +12,7 @@
 
     <groupId>io.github.waldemargr</groupId>
     <artifactId>n-plus-1-detector</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <packaging>jar</packaging>
 
     <name>N+1 Detection Toolkit</name>
@@ -64,6 +64,24 @@
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
             <version>9.7</version>
+        </dependency>
+
+        <!--For test-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.34</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <distributionManagement>

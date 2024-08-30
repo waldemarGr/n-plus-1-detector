@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
 
 /**
@@ -26,34 +27,49 @@ public class HashCodeAnalysis {
 
     @PostConstruct
     public void printStatistics() throws IOException {
-        Set<Class<?>> entitiesInPackage = entityFinderService.findEntitiesInPackage(basePath);
-        for (Class<?> entity : entitiesInPackage) {
-            ClassReader classReader = new ClassReader(entity.getName());
-            HashCodeFieldCollector collector = new HashCodeFieldCollector();
-            classReader.accept(collector, 0);
-            Set<String> fields = collector.getFieldsUsedInHashCode();
-            Set<String> externalsId = Set.of("uuid", "naturalId");// TODO: In the future, we'll allow users to configure this (e.g., adding additional identifiers).
+        try {
+            Set<Class<?>> entitiesInPackage = entityFinderService.findEntitiesInPackage(basePath);
+            for (Class<?> entity : entitiesInPackage) {
+                InputStream entityStream = entity.getResourceAsStream(entity.getSimpleName() + ".class");
+                ClassReader classReader = new ClassReader(entityStream);
+                HashCodeFieldCollector collector = new HashCodeFieldCollector();
+                classReader.accept(collector, 0);
+                Set<String> fieldsUsedInHashCode = collector.getFieldsUsedInHashCode();
+                Set<String> methodsUsedInHashCode = collector.getMethodsUsedInHashCode();
+                Set<String> externalsId = Set.of("uuid", "naturalId");/* TODO: In the future, we'll allow users to configure this (e.g., adding additional identifiers).*/
 
-            /**
-             * @return true if:
-             *         - The set of fields contains more than one element; or
-             *         - The set of fields contains exactly one element, and this element does not contain
-             *           any of the strings in the first element of the external IDs set (in lowercase).
-             */
-            boolean isProbablyIncorectImplementHascCode = fields.size() > 1 ||
-                                                          (fields.size() == 1 && fields.stream().findAny().stream()
-                                                                  .noneMatch(s -> externalsId.iterator().next().contains(s.toLowerCase())));
-            if (fields.isEmpty()) {
-                log.warn("No hashCode implementation found for @Entity {}. It is recommended to implement hashCode," +
-                         " preferably based on stable fields like a UUID generated at the application level.",
-                        entity.getName());
+                /**
+                 * @return true if:
+                 *         - The set of fields contains more than one element; or
+                 *         - The set of fields contains exactly one element, and this element does not contain
+                 *           any of the strings in the first element of the external IDs set (in lowercase).
+                 */
+                boolean isProbablyIncorectImplementHashCodeFields = fieldsUsedInHashCode.size() > 1 ||
+                                                                    (fieldsUsedInHashCode.size() == 1 && fieldsUsedInHashCode.stream().findAny().stream()
+                                                                            .noneMatch(s -> externalsId.iterator().next().contains(s.toLowerCase())));
 
-            } else if (isProbablyIncorectImplementHascCode) {
-                log.warn("The hashCode for {}} is calculated from {} fields. For @Entity classes, it is recommended" +
-                         " that the hashCode be based on fields that remain stable throughout the lifecycle of the @Entity." +
-                         " Ideally, use a single field such as a UUID generated at the application level.",
-                        entity.getName(), fields.size());
+                boolean isProbablyIncorectImplementHashCodeByMethods = methodsUsedInHashCode.size() > 1 ||
+                                                                       (methodsUsedInHashCode.size() == 1 && methodsUsedInHashCode.stream().findAny().stream()
+                                                                               .noneMatch(s -> externalsId.iterator().next().contains(s.toLowerCase())));
+
+                if (fieldsUsedInHashCode.isEmpty() && methodsUsedInHashCode.isEmpty()) {
+                    log.warn("No hashCode implementation found for @Entity {}. It is recommended to implement hashCode," +
+                             " preferably based on stable fields like a UUID generated at the application level.",
+                            entity.getName());
+                } else if (isProbablyIncorectImplementHashCodeFields) {
+                    log.warn("The hashCode for {}} is calculated from {} fields. For @Entity classes, it is recommended" +
+                             " that the hashCode be based on fields that remain stable throughout the lifecycle of the @Entity." +
+                             " Ideally, use a single field such as a UUID generated at the application level.",
+                            entity.getName(), fieldsUsedInHashCode.size());
+                } else if (isProbablyIncorectImplementHashCodeByMethods) {
+                    log.warn("The hashCode for {}} is calculated from {} fields. For @Entity classes, it is recommended" +
+                             " that the hashCode be based on fields that remain stable throughout the lifecycle of the @Entity." +
+                             " Ideally, use a single field such as a UUID generated at the application level.",
+                            entity.getName(), methodsUsedInHashCode.size());
+                }
             }
+        } catch (Exception e) {
+            log.error("Problem with HashCodeAnalysis", e);
         }
     }
 }

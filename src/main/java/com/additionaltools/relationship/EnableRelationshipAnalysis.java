@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Custom annotation to enable HashCodeAnalysis configuration.
+ * Custom annotation to enable RelationshipAnalysis configuration.
  * This annotation will import the necessary configuration class.
  */
 @Target(ElementType.TYPE)
