@@ -14,7 +14,7 @@ public class RelationshipCollector extends ClassVisitor {
     private final String entityName;
     private final Set<EntityFieldOptimizationInfo> entityFieldWithListInfos = new HashSet<>();
 
-    public RelationshipCollector(String entityName) {
+    RelationshipCollector(String entityName) {
         super(Opcodes.ASM9);
         this.entityName = entityName;
     }

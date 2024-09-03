@@ -1,6 +1,6 @@
 package com.additionaltools.relationship;
 
-import com.additionaltools.common.EntityFinderService;
+import com.additionaltools.common.AnnotationScannerService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +12,12 @@ import java.util.*;
 
 
 public class RelationshipAnalysis {
-    private final EntityFinderService entityFinderService;
+    private final AnnotationScannerService annotationScannerService;
     private final String basePath;
     private static final Logger log = LoggerFactory.getLogger(RelationshipAnalysis.class);
 
-    public RelationshipAnalysis(EntityFinderService entityFinderService, String basePath) {
-        this.entityFinderService = entityFinderService;
+    RelationshipAnalysis(AnnotationScannerService annotationScannerService, String basePath) {
+        this.annotationScannerService = annotationScannerService;
         this.basePath = basePath;
     }
 
@@ -52,7 +52,7 @@ public class RelationshipAnalysis {
      */
     public Set<EntityFieldOptimizationInfo> collectEntityOptimizationData() throws IOException {
         Set<EntityFieldOptimizationInfo> entityFieldWithListInfos = new HashSet<>();
-        Set<Class<?>> entitiesInPackage = entityFinderService.findEntitiesInPackage(basePath);
+        Set<Class<?>> entitiesInPackage = annotationScannerService.findEntitiesInPackage(basePath);
         for (Class<?> entity : entitiesInPackage) {
             InputStream resourceAsStream = entity.getResourceAsStream(entity.getSimpleName() + ".class");
             ClassReader classReader = new ClassReader(resourceAsStream);

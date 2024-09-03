@@ -1,6 +1,6 @@
 package com.additionaltools.relationship;
 
-import com.additionaltools.common.EntityFinderService;
+import com.additionaltools.common.AnnotationScannerService;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
@@ -15,15 +15,15 @@ import java.util.Set;
 public class RelationshipAnalysisConfiguration {
 
     @Bean
-    public RelationshipAnalysis relationshipAnalysis(EntityFinderService entityFinderService) {
+    public RelationshipAnalysis relationshipAnalysis(AnnotationScannerService annotationScannerService) {
         String basePath = getBasePathFromAnnotation();
-        return new RelationshipAnalysis(entityFinderService, basePath);
+        return new RelationshipAnalysis(annotationScannerService, basePath);
     }
 
     @Bean
-    @ConditionalOnMissingBean(EntityFinderService.class)
-    public EntityFinderService entityFinderService() {
-        return new EntityFinderService();
+    @ConditionalOnMissingBean(AnnotationScannerService.class)
+    public AnnotationScannerService entityFinderService() {
+        return new AnnotationScannerService();
     }
 
     /**

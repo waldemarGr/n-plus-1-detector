@@ -1,6 +1,6 @@
 package com.additionaltools.hashcodevalidator;
 
-import com.additionaltools.common.EntityFinderService;
+import com.additionaltools.common.AnnotationScannerService;
 import jakarta.annotation.PostConstruct;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
@@ -12,23 +12,23 @@ import java.util.Set;
 
 /**
  * The {@code HashCodeAnalysis} class is responsible for analyzing the {@code hashCode} implementation
- * in entity classes within a specified package. It uses the {@link EntityFinderService} to locate
+ * in entity classes within a specified package. It uses the {@link AnnotationScannerService} to locate
  * the entity classes and then examines their {@code hashCode} methods to ensure they are implemented correctly.
  */
 public class HashCodeAnalysis {
-    private final EntityFinderService entityFinderService;
+    private final AnnotationScannerService annotationScannerService;
     private final String basePath;
     private static final Logger log = LoggerFactory.getLogger(HashCodeAnalysis.class);
 
-    public HashCodeAnalysis(EntityFinderService entityFinderService, String basePath) {
-        this.entityFinderService = entityFinderService;
+    HashCodeAnalysis(AnnotationScannerService annotationScannerService, String basePath) {
+        this.annotationScannerService = annotationScannerService;
         this.basePath = basePath;
     }
 
     @PostConstruct
     public void printStatistics() throws IOException {
         try {
-            Set<Class<?>> entitiesInPackage = entityFinderService.findEntitiesInPackage(basePath);
+            Set<Class<?>> entitiesInPackage = annotationScannerService.findEntitiesInPackage(basePath);
             for (Class<?> entity : entitiesInPackage) {
                 InputStream entityStream = entity.getResourceAsStream(entity.getSimpleName() + ".class");
                 ClassReader classReader = new ClassReader(entityStream);
