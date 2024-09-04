@@ -46,15 +46,21 @@ public class SqlExplainPlanConfiguration {
     }
 
     @Bean
-    @ConditionalOnExpression("#{ '${spring.datasource.driverClassName}'.contains('mysql') }")
+    @ConditionalOnExpression("#{ '${spring.datasource.url}'.contains('mysql')}")
     public Explainer mySqlExplainer(JdbcTemplate jdbcTemplate) {
         return new MySqlExplainer(jdbcTemplate);
     }
 
     @Bean
-    @ConditionalOnExpression("#{ '${spring.datasource.driverClassName}'.contains('oracle') }")
+    @ConditionalOnExpression("#{ '${spring.datasource.url}'.contains('oracle') }")
     public Explainer oracleExplainer(JdbcTemplate jdbcTemplate) {
         return new OracleExplainer(jdbcTemplate);
+    }
+
+    @Bean
+    @ConditionalOnExpression("#{ '${spring.datasource.url}'.contains('h2') }")
+    public Explainer h2Explainer(JdbcTemplate jdbcTemplate) {
+        return new H2Explainer(jdbcTemplate);
     }
 
     @PostConstruct

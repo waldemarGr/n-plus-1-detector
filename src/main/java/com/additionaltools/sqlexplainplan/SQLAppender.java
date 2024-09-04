@@ -43,7 +43,7 @@ public class SQLAppender extends AppenderBase<ILoggingEvent> {
             List<Map<String, Object>> oracleExecutionPlans = explainer.explainQuery(sqlDefinitionHolder.getLast().getSqlWithArguments());
             sqlDefinitionHolder.getLast().explanations().addAll(oracleExecutionPlans);
             logger.info(sqlDefinitionHolder.getLast().toString());
-            printTable(oracleExecutionPlans);
+            explainer.printTable(oracleExecutionPlans);
         }
     }
 

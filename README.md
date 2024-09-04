@@ -9,7 +9,7 @@ https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
 <dependency>
     <groupId>io.github.waldemargr</groupId>
     <artifactId>n-plus-1-detector</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
 </dependency>
 ```
 
@@ -46,7 +46,7 @@ https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
   is applied. It performs a bytecode-level analysis to evaluate how entity fields, particularly collections like List,
   Set, or Map, are used in relationships, providing recommendations for potential optimizations.
 
-### Query Execution Plan Logging (Mysql/Oracle)
+#### Query Execution Plan Logging (Mysql/Oracle)
 
 - **Note:** This feature has not yet been tested on Oracle.
 - **Objective:** Provide detailed insights into the execution plans of app queries, helping to identify and address
@@ -57,9 +57,11 @@ https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
 
 ```java
 
+@EnableQueryPlanAnalysis
 @EnableRelationshipAnalysis
 @EnableAdditionalHibernateStatistic
 @EnableHashCodeAnalysis
+
 @SpringBootApplication
 public class MySpringApp {
 
@@ -237,8 +239,7 @@ To ensure your application is optimized and free from common Hibernate pitfalls,
     ```
 
 //todo
-@NaturalId -
-wyświetlanie planu zaytania
+@NaturalId,
 analiza planu zapytania
 
 **Sources**

@@ -13,6 +13,19 @@ public class OracleExplainer implements Explainer {
     }
 
     public List<Map<String, Object>> explainQuery(String query) {
-        return jdbcTemplate.queryForList("EXPLAIN PLAN  %s".formatted(query));
+        jdbcTemplate.queryForList("EXPLAIN PLAN FOR %s".formatted(query));
+        return jdbcTemplate.queryForList("SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY)");
+    }
+
+    @Override
+    public void printTable(List<Map<String, Object>> tables) {
+        StringBuilder logMessage = new StringBuilder();
+        for (Map<String, Object> table : tables) {
+            for (Map.Entry<String, Object> entry : table.entrySet()) {
+                logMessage.append(entry.getValue());
+            }
+            logMessage.append(System.lineSeparator());
+        }
+        logger.info("\n{}", logMessage.toString());
     }
 }
