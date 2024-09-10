@@ -37,7 +37,6 @@ public class MySqlExplainer implements Explainer {
             }
             logBuilder.append(separator).append("\n\n");
         }
-
         logger.info("\n{}", logBuilder);
     }
 

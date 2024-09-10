@@ -1,4 +1,4 @@
-# N+1 Query Detector and HashCode Analysis
+# HiPerAnalyzer (Hibernate Performance Analyzer)
 
 ### Maven Central.
 
@@ -9,7 +9,7 @@ https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
 <dependency>
     <groupId>io.github.waldemargr</groupId>
     <artifactId>n-plus-1-detector</artifactId>
-    <version>1.3.1</version>
+    <version>1.4.0</version>
 </dependency>
 ```
 
@@ -48,15 +48,20 @@ https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
 
 #### Query Execution Plan Logging (Mysql/Oracle)
 
-- **Note:** This feature has not yet been tested on Oracle.
 - **Objective:** Provide detailed insights into the execution plans of app queries, helping to identify and address
   performance issues in your database interactions
 - **Implementation:** Use the `@EnableQueryPlanAnalysis` annotation to enable logging of query execution plans. By
   applying this annotation, the application will log the execution plan for every query executed by Hibernate, offering
   a deeper look into how queries are being processed.
 
+#### Additional Select Before Insert Detector
+
+- **Objective:** Detecting redundant SELECT queries during entity saving.
+- **Implementation:** Use the `@EnableAdditionalSelectBeforeInsertDetector
+
 ```java
 
+@EnableAdditionalSelectBeforeInsertDetector
 @EnableQueryPlanAnalysis
 @EnableRelationshipAnalysis
 @EnableAdditionalHibernateStatistic

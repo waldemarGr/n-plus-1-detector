@@ -69,7 +69,7 @@ public class SQLStatisticsService {
                     );
             log.warn(warning);
         } else {
-            log.trace("No N+1 issue detected for method %s".formatted(methodName));
+            log.trace("No N+1 issue detected for method {}", methodName);
         }
     }
 

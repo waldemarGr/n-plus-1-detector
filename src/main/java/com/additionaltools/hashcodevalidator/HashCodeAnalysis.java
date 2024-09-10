@@ -54,17 +54,19 @@ public class HashCodeAnalysis {
 
                 if (fieldsUsedInHashCode.isEmpty() && methodsUsedInHashCode.isEmpty()) {
                     log.warn("No hashCode implementation found for @Entity {}. It is recommended to implement hashCode," +
-                             " preferably based on stable fields like a UUID generated at the application level.",
+                             " preferably based on stable fields like a UUID or naturalId generated at the application level.",
                             entity.getName());
                 } else if (isProbablyIncorectImplementHashCodeFields) {
-                    log.warn("The hashCode for {}} is calculated from {} fields. For @Entity classes, it is recommended" +
-                             " that the hashCode be based on fields that remain stable throughout the lifecycle of the @Entity." +
-                             " Ideally, use a single field such as a UUID generated at the application level.",
+                    log.warn("""
+                                    The hashCode for {} is calculated from {} fields. For @Entity classes, it is recommended\
+                                     that the hashCode be based on fields that remain stable throughout the lifecycle of the @Entity.\
+                                     Ideally, use a single field such as a UUID or naturalId generated at the application level.""",
                             entity.getName(), fieldsUsedInHashCode.size());
                 } else if (isProbablyIncorectImplementHashCodeByMethods) {
-                    log.warn("The hashCode for {}} is calculated from {} fields. For @Entity classes, it is recommended" +
-                             " that the hashCode be based on fields that remain stable throughout the lifecycle of the @Entity." +
-                             " Ideally, use a single field such as a UUID generated at the application level.",
+                    log.warn("""
+                                    The hashCode for {} is calculated from {} fields. For @Entity classes, it is recommended\
+                                     that the hashCode be based on fields that remain stable throughout the lifecycle of the @Entity.\
+                                     Ideally, use a single field such as a UUID or naturalId  generated at the application level.""",
                             entity.getName(), methodsUsedInHashCode.size());
                 }
             }
