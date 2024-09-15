@@ -1,16 +1,31 @@
 # HiPerAnalyzer (Hibernate Performance Analyzer)
 
-### Maven Central.
+#### Requirements
+- Spring Boot: 3.x.x 
+- Java: >= 17 
+- Hibernate: 6.x
+- Spring Boot 3.x
 
 https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
-
 ```xml
-
 <dependency>
     <groupId>io.github.waldemargr</groupId>
     <artifactId>n-plus-1-detector</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
 </dependency>
+```
+How to run:
+```java
+@EnableAdditionalSelectBeforeInsertDetector
+@EnableQueryPlanAnalysis
+@EnableRelationshipAnalysis
+@NPlus1QueryDetection
+@EnableHashCodeAnalysis
+
+@SpringBootApplication
+public class SpringApp {
+
+}
 ```
 
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=waldemarGr_n-plus-1-detector&metric=bugs)](https://sonarcloud.io/summary/new_code?id=waldemarGr_n-plus-1-detector)
@@ -18,26 +33,20 @@ https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
 ## Project Overview
 
 ### Current Features
-
 #### N+1 Query Detection:
-
 - **Objective:** Identify and resolve N+1 query problems that can lead to performance bottlenecks in applications using
   Hibernate.
-- **Implementation:** Use `@EnableAdditionalHibernateStatistic` to analyze queries statistic and provide insights into
+- **Implementation:** Use `@NPlus1QueryDetection` to analyze queries statistic and provide insights into
   potential
   N+1 query issues.
-
 #### HashCode Analysis:
-
 - **Objective:** Ensure that hashCode methods in your `@Entity` are implemented correctly to follow best practices and
   avoid common pitfalls.
 - **Implementation:** Use the `@EnableHashCodeAnalysis` annotation to activate the hashCode analysis functionality. This
   annotation triggers a scan for `@Entity` classes starting from the package path specified where you put the
   `@EnableHashCodeAnalysis`. It performs analysis of hashCode methods at the `bytecode` level, ensuring that these
   methods are based on stable fields and avoiding common mistakes.
-
 #### Relationship Entity Analysis:
-
 - **Objective:** Identify opportunities for optimizing entity fields in relation to specific relationships, improving
   performance and memory efficiency.
 - **Implementation:** Use the `@EnableRelationshipAnalysis` annotation to activate relationship entity analysis. This
@@ -45,33 +54,17 @@ https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
   where `@EnableRelationshipAnalysis`
   is applied. It performs a bytecode-level analysis to evaluate how entity fields, particularly collections like List,
   Set, or Map, are used in relationships, providing recommendations for potential optimizations.
-
-#### Query Execution Plan Logging (Mysql/Oracle)
-
+#### Plan Execution Logging (Mysql/Oracle)
 - **Objective:** Provide detailed insights into the execution plans of app queries, helping to identify and address
   performance issues in your database interactions
 - **Implementation:** Use the `@EnableQueryPlanAnalysis` annotation to enable logging of query execution plans. By
   applying this annotation, the application will log the execution plan for every query executed by Hibernate, offering
   a deeper look into how queries are being processed.
-
 #### Additional Select Before Insert Detector
-
 - **Objective:** Detecting redundant SELECT queries during entity saving.
 - **Implementation:** Use the `@EnableAdditionalSelectBeforeInsertDetector
 
-```java
 
-@EnableAdditionalSelectBeforeInsertDetector
-@EnableQueryPlanAnalysis
-@EnableRelationshipAnalysis
-@EnableAdditionalHibernateStatistic
-@EnableHashCodeAnalysis
-
-@SpringBootApplication
-public class MySpringApp {
-
-}
-```
 
 ## Optimization List
 
@@ -282,20 +275,21 @@ To ensure your application is optimized and free from common Hibernate pitfalls,
      ```Java
     @Transactional
     public void updateUser(Long userId, String newName) {
-        User user = userRepository.findById(userId).orElseThrow();
-        user.setName(newName);
+        User userer = userRepository.findById(userId).orElseThrow();
+        userer.setName(newName);
         //  No need to manually save; dirty checking will work its magic
     }
     ```
+19. **SaveAll() batch insert** //todo
 
-19. **A key takeaway: Understand Your Logs**
+20. **A key takeaway: Understand Your Logs**
     - Read the logs and understand what they mean. This library simply analyzes the logs and identifies issues if they
       arise. You can achieve the same result by analyzing and understanding Hibernate logs yourself.
     ```property
     logging.level.org.hibernate.SQL=debug
     logging.level.org.hibernate.orm.jdbc.bind=trace
     ```
-20. **Execution Plan for Oracle**
+21. **Execution Plan for Oracle**
     OK, so when you're running queries on an Oracle DB, the execution plan shows you how Oracle decides to pull data and
     execute the query. Understanding this plan helps us find out where things can be optimized. Here’s a list of common
     operations you'll see in an execution plan:
@@ -369,7 +363,7 @@ To ensure your application is optimized and free from common Hibernate pitfalls,
 |                          | HASH                  | Retrieves rows based on a hash cluster key value.                                                             | Medium                |
 |                          | BY ROWID RANGE        | Retrieves rows based on a rowid range.                                                                        | Medium                |
 |                          | SAMPLE BY ROWID RANGE | Retrieves sampled rows based on a rowid range.                                                                | Medium                |
-|                          | BY USER ROWID         | Retrieves rows using user-supplied rowids.                                                                    | Medium                |
+|                          | BY USER ROWID         | Retrieves rows using userer-supplied rowids.                                                                    | Medium                |
 |                          | BY INDEX ROWID        | Retrieves rows using indexes in a non-partitioned table.                                                      | High                  |
 |                          | BY GLOBAL INDEX ROWID | Retrieves rows using only global indexes in a partitioned table.                                              | High                  |
 |                          | BY LOCAL INDEX ROWID  | Retrieves rows using local and possibly global indexes in a partitioned table.                                | High                  |
