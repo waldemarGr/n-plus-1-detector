@@ -1,9 +1,5 @@
 package com.additionaltools.tostringvalidator;
 
-//import com.additionaltools.relationship.EntityFieldOptimizationInfo;
-//import org.objectweb.asm.ClassVisitor;
-//import org.objectweb.asm.MethodVisitor;
-//import org.objectweb.asm.Opcodes;
 
 import org.springframework.asm.ClassVisitor;
 import org.springframework.asm.MethodVisitor;
@@ -24,8 +20,8 @@ import static org.springframework.asm.Opcodes.ASM9;
  */
 public class ToStringFieldCollector extends ClassVisitor {
 
-    private Set<ToStringData> fieldsUsedInToString = new HashSet<>();
-    private Set<ToStringData> methodsUsedInToString = new HashSet<>();
+    private final Set<ToStringData> fieldsUsedInToString = new HashSet<>();
+    private final Set<ToStringData> methodsUsedInToString = new HashSet<>();
 
 
     public ToStringFieldCollector() {
@@ -52,7 +48,7 @@ public class ToStringFieldCollector extends ClassVisitor {
 
                 @Override
                 public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-                    if (180 == opcode && !descriptor.contains("Ljava/lang/")) {
+                    if (180 == opcode && isCollection(descriptor)) {
                         ToStringData data = new ToStringData(name, removePrefix(descriptor));
                         fieldsUsedInToString.add(data);
                     }
@@ -61,11 +57,9 @@ public class ToStringFieldCollector extends ClassVisitor {
 
                 @Override
                 public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                    if (182 == opcode && !descriptor.contains("()Ljava/lang/")) {
+                    if (182 == opcode && isCollection(descriptor)) {
                         ToStringData data = new ToStringData(name, removePrefix(descriptor));
                         methodsUsedInToString.add(data);
-                    } else {
-                        System.out.println(descriptor);
                     }
                     super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
                 }
@@ -90,4 +84,19 @@ public class ToStringFieldCollector extends ClassVisitor {
         }
         return description;
     }
+
+    private boolean isCollection(String descriptor) {
+        return descriptor.contains("Ljava/util/List;") ||
+               descriptor.contains("Ljava/util/Set;") ||
+               descriptor.contains("Ljava/util/Map;") ||
+               descriptor.contains("Ljava/util/Queue;") ||
+               descriptor.contains("Ljava/util/ArrayList;") ||
+               descriptor.contains("Ljava/util/LinkedList;") ||
+               descriptor.contains("Ljava/util/HashSet;") ||
+               descriptor.contains("Ljava/util/TreeSet;") ||
+               descriptor.contains("Ljava/util/HashMap;") ||
+               descriptor.contains("Ljava/util/LinkedHashMap;") ||
+               descriptor.contains("Ljava/util/TreeMap;");
+    }
+
 }

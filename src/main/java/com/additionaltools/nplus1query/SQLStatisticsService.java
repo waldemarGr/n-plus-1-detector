@@ -1,5 +1,6 @@
 package com.additionaltools.nplus1query;
 
+import com.additionaltools.logging.LoggingService;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
@@ -22,12 +23,14 @@ import java.util.regex.Pattern;
 public class SQLStatisticsService {
     private final Statistics statistics;
     private final StatisticsImpl statisticsImp;
+    private final LoggingService loggingService;
     private static final Logger log = LoggerFactory.getLogger(SQLStatisticsService.class);
 
-    public SQLStatisticsService(EntityManagerFactory entityManagerFactory) {
+    public SQLStatisticsService(EntityManagerFactory entityManagerFactory, LoggingService loggingService) {
         this.statistics = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
         this.statistics.setStatisticsEnabled(true);
         this.statisticsImp = (StatisticsImpl) statistics;
+        this.loggingService = loggingService;
     }
 
     /**
@@ -61,12 +64,13 @@ public class SQLStatisticsService {
                     ))
                     .toList();
 
-            String warning = "N+1 problem detected. Queries: %s; Method: %s; Summary: %s"
+            String warning = "N+1_SELECT_DETECTED: Queries: %s; Method: %s; Summary: %s"
                     .formatted(
                             Arrays.toString(queries),
                             methodName,
                             fetchDetails
                     );
+            loggingService.addLog(warning);
             log.warn(warning);
         } else {
             log.trace("No N+1 issue detected for method {}", methodName);

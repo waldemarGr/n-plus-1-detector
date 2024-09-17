@@ -4,14 +4,18 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.additionaltools.common.AnnotationScannerService;
+import com.additionaltools.common.EmptyLoggingConfiguration;
+import com.additionaltools.logging.LoggingService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+@Import(EmptyLoggingConfiguration.class)
 @Configuration
 public class SqlExplainPlanConfiguration {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SqlExplainPlanConfiguration.class);
@@ -30,9 +34,9 @@ public class SqlExplainPlanConfiguration {
 
 
     @Bean
-    public SQLAppender sqlAppender(String basePath, Explainer explainer) {
+    public SQLAppender sqlAppender(String basePath, Explainer explainer, LoggingService loggingService) {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        SQLAppender sqlAppender = new SQLAppender(basePath, explainer);
+        SQLAppender sqlAppender = new SQLAppender(basePath, explainer, loggingService);
         sqlAppender.setContext(context);
         sqlAppender.start();
 

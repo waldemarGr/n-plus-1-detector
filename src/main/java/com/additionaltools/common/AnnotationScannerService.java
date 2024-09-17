@@ -1,6 +1,5 @@
 package com.additionaltools.common;
 
-import jakarta.persistence.Entity;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
@@ -13,9 +12,9 @@ import java.util.Set;
 @Service
 public class AnnotationScannerService {
 
-    public Set<Class<?>> findEntitiesInPackage(String basePackage) {
+    public Set<Class<?>> findInPackage(String basePackage, Class<? extends Annotation> annotation) {
         Reflections reflections = new Reflections(basePackage);
-        return reflections.getTypesAnnotatedWith(Entity.class);
+        return reflections.getTypesAnnotatedWith(annotation);
     }
 
     /**

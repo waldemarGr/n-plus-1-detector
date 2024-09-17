@@ -1,15 +1,14 @@
 package com.additionaltools.sqlexplainplan;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 import java.util.Map;
 
 public class H2Explainer implements Explainer {
-    private final JdbcTemplate jdbcTemplate;
 
     public H2Explainer(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     public List<Map<String, Object>> explainQuery(String query) {
@@ -17,7 +16,7 @@ public class H2Explainer implements Explainer {
     }
 
     @Override
-    public void printTable(List<Map<String, Object>> tables) {
-
+    public String getPrintableTable(List<Map<String, Object>> tables) {
+        return Strings.EMPTY;
     }
 }

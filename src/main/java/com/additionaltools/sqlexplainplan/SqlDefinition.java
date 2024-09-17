@@ -7,25 +7,23 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public record SqlDefinition(String sql, Queue<String> arguments, String methodExecution,
+public record SqlDefinition(String sql,
+                            Queue<String> arguments,
+                            String methodExecution,
                             List<Map<String, Object>> explanations) {
+
     public String getSqlWithArguments() {
         Pattern pattern = Pattern.compile("\\?");
         Matcher matcher = pattern.matcher(sql);
 
         StringBuilder sqlWithArgs = new StringBuilder();
-
         Iterator<String> argIterator = arguments.iterator();
-
         while (matcher.find()) {
             String arg = argIterator.hasNext() ? argIterator.next() : "?";
-
             String formattedArg = formatArgument(arg);
-
             matcher.appendReplacement(sqlWithArgs, formattedArg);
         }
         matcher.appendTail(sqlWithArgs);
-
         return sqlWithArgs.toString();
     }
 

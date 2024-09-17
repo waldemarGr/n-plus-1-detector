@@ -1,5 +1,6 @@
 package com.additionaltools.additionalselect;
 
+import com.additionaltools.logging.LoggingService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,9 +16,11 @@ public class JpaSaveMonitorAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(JpaSaveMonitorAspect.class);
     private final SessionFactory sessionFactory;
+    private final LoggingService loggingService;
 
-    public JpaSaveMonitorAspect(SessionFactory sessionFactory) {
+    public JpaSaveMonitorAspect(SessionFactory sessionFactory, LoggingService loggingService) {
         this.sessionFactory = sessionFactory;
+        this.loggingService = loggingService;
     }
 
     //todo add saveAll
@@ -41,7 +44,9 @@ public class JpaSaveMonitorAspect {
         long insertCount = statistics.getEntityInsertCount();
 
         if (preparedCount > insertCount && insertCount > 0) {
-            logger.warn("Potential inefficiency detected in '{}': SELECT before INSERT during save operation.", repositoryName);
+            String message = "SELECT_BEFORE_INSERT: Potential inefficiency detected in %s: SELECT before INSERT during save operation.".formatted(repositoryName);
+            loggingService.addLog(message);
+            logger.warn(message);
         }
         return result;
     }

@@ -1,7 +1,9 @@
 package com.additionaltools.relationship;
 
 import com.additionaltools.common.AnnotationScannerService;
+import com.additionaltools.logging.LoggingService;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.asm.ClassReader;
@@ -15,10 +17,12 @@ public class RelationshipAnalysis {
     private final AnnotationScannerService annotationScannerService;
     private final String basePath;
     private static final Logger log = LoggerFactory.getLogger(RelationshipAnalysis.class);
+    private final LoggingService loggingService;
 
-    RelationshipAnalysis(AnnotationScannerService annotationScannerService, String basePath) {
+    RelationshipAnalysis(AnnotationScannerService annotationScannerService, String basePath, LoggingService loggingService) {
         this.annotationScannerService = annotationScannerService;
         this.basePath = basePath;
+        this.loggingService = loggingService;
     }
 
     @PostConstruct
@@ -28,11 +32,14 @@ public class RelationshipAnalysis {
             Optional.ofNullable(collectEntityOptimizationData()).stream()
                     .filter(Objects::nonNull)
                     .flatMap(Collection::stream)
-                    .forEach(info ->
-                            log.warn("Entity '{}' contains a field '{}' of type '{}' with a '{}' relationship annotation. "
-                                     + "Consider using a Set for improved performance and more efficient SQL queries.",
-                                    info.entityName(), info.fieldName(), info.currentFieldType(), info.relationshipType())
-                    );
+                    .forEach(info -> {
+                        String message = """
+                                INEFFICIENT_COLLECTION_TYPE: Entity %s contains a field %s of type %s with a %s relationship annotation. \
+                                Consider using a Set for improved performance and more efficient SQL queries."""
+                                .formatted(info.entityName(), info.fieldName(), info.currentFieldType(), info.relationshipType());
+                        loggingService.addLog(message);
+                        log.warn(message);
+                    });
         } catch (Exception e) {
             log.error("Problem with RelationshipAnalysis", e);
         }
@@ -52,7 +59,7 @@ public class RelationshipAnalysis {
      */
     public Set<EntityFieldOptimizationInfo> collectEntityOptimizationData() throws IOException {
         Set<EntityFieldOptimizationInfo> entityFieldWithListInfos = new HashSet<>();
-        Set<Class<?>> entitiesInPackage = annotationScannerService.findEntitiesInPackage(basePath);
+        Set<Class<?>> entitiesInPackage = annotationScannerService.findInPackage(basePath, Entity.class);
         for (Class<?> entity : entitiesInPackage) {
             InputStream resourceAsStream = entity.getResourceAsStream(entity.getSimpleName() + ".class");
             ClassReader classReader = new ClassReader(resourceAsStream);

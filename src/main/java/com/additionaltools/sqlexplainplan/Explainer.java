@@ -11,6 +11,6 @@ public interface Explainer {
 
     List<Map<String, Object>> explainQuery(String query);
 
-    void printTable(List<Map<String, Object>> tables);
+    String getPrintableTable(List<Map<String, Object>> tables);
 }
 

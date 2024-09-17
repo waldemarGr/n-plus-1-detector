@@ -18,7 +18,7 @@ public class OracleExplainer implements Explainer {
     }
 
     @Override
-    public void printTable(List<Map<String, Object>> tables) {
+    public String getPrintableTable(List<Map<String, Object>> tables) {
         StringBuilder logMessage = new StringBuilder();
         for (Map<String, Object> table : tables) {
             for (Map.Entry<String, Object> entry : table.entrySet()) {
@@ -26,6 +26,6 @@ public class OracleExplainer implements Explainer {
             }
             logMessage.append(System.lineSeparator());
         }
-        logger.info("\n{}", logMessage.toString());
+       return logMessage.toString();
     }
 }

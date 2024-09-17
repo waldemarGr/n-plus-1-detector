@@ -1,23 +1,26 @@
 package com.additionaltools.relationship;
 
 import com.additionaltools.common.AnnotationScannerService;
+import com.additionaltools.common.EmptyLoggingConfiguration;
+import com.additionaltools.logging.LoggingService;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import java.util.Set;
 
-
+@Import(EmptyLoggingConfiguration.class)
 @Configuration
 public class RelationshipAnalysisConfiguration {
 
     @Bean
-    public RelationshipAnalysis relationshipAnalysis(AnnotationScannerService annotationScannerService) {
+    public RelationshipAnalysis relationshipAnalysis(AnnotationScannerService annotationScannerService, LoggingService loggingService) {
         String basePath = getBasePathFromAnnotation();
-        return new RelationshipAnalysis(annotationScannerService, basePath);
+        return new RelationshipAnalysis(annotationScannerService, basePath, loggingService);
     }
 
     @Bean

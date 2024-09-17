@@ -1,21 +1,28 @@
 # HiPerAnalyzer (Hibernate Performance Analyzer)
 
 #### Requirements
-- Spring Boot: 3.x.x 
-- Java: >= 17 
+
+- Spring Boot: 3.x.x
+- Java: >= 17
 - Hibernate: 6.x
 - Spring Boot 3.x
 
 https://mvnrepository.com/artifact/io.github.waldemargr/n-plus-1-detector
+
 ```xml
+
 <dependency>
     <groupId>io.github.waldemargr</groupId>
     <artifactId>n-plus-1-detector</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.0</version>
 </dependency>
 ```
+
 How to run:
+
 ```java
+
+@LoggingToFile
 @EnableAdditionalSelectBeforeInsertDetector
 @EnableQueryPlanAnalysis
 @EnableRelationshipAnalysis
@@ -30,23 +37,31 @@ public class SpringApp {
 
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=waldemarGr_n-plus-1-detector&metric=bugs)](https://sonarcloud.io/summary/new_code?id=waldemarGr_n-plus-1-detector)
 
+---
+
 ## Project Overview
 
 ### Current Features
+
 #### N+1 Query Detection:
+
 - **Objective:** Identify and resolve N+1 query problems that can lead to performance bottlenecks in applications using
   Hibernate.
 - **Implementation:** Use `@NPlus1QueryDetection` to analyze queries statistic and provide insights into
   potential
   N+1 query issues.
+
 #### HashCode Analysis:
+
 - **Objective:** Ensure that hashCode methods in your `@Entity` are implemented correctly to follow best practices and
   avoid common pitfalls.
 - **Implementation:** Use the `@EnableHashCodeAnalysis` annotation to activate the hashCode analysis functionality. This
   annotation triggers a scan for `@Entity` classes starting from the package path specified where you put the
   `@EnableHashCodeAnalysis`. It performs analysis of hashCode methods at the `bytecode` level, ensuring that these
   methods are based on stable fields and avoiding common mistakes.
+
 #### Relationship Entity Analysis:
+
 - **Objective:** Identify opportunities for optimizing entity fields in relation to specific relationships, improving
   performance and memory efficiency.
 - **Implementation:** Use the `@EnableRelationshipAnalysis` annotation to activate relationship entity analysis. This
@@ -54,17 +69,25 @@ public class SpringApp {
   where `@EnableRelationshipAnalysis`
   is applied. It performs a bytecode-level analysis to evaluate how entity fields, particularly collections like List,
   Set, or Map, are used in relationships, providing recommendations for potential optimizations.
+
 #### Plan Execution Logging (Mysql/Oracle)
+
 - **Objective:** Provide detailed insights into the execution plans of app queries, helping to identify and address
   performance issues in your database interactions
 - **Implementation:** Use the `@EnableQueryPlanAnalysis` annotation to enable logging of query execution plans. By
   applying this annotation, the application will log the execution plan for every query executed by Hibernate, offering
   a deeper look into how queries are being processed.
+
 #### Additional Select Before Insert Detector
+
 - **Objective:** Detecting redundant SELECT queries during entity saving.
-- **Implementation:** Use the `@EnableAdditionalSelectBeforeInsertDetector
+- **Implementation:** Use the `@EnableAdditionalSelectBeforeInsertDetector`
 
+#### Logging To File
 
+- **Objective:** Log information to the `HiPerAnalyzerLogs.txt` file. This is useful when working locally on a laptop
+  and you want to gather all suggestions in one place.
+- **Implementation:** Use the `@LoggingToFile`
 
 ## Optimization List
 
@@ -74,7 +97,7 @@ To ensure your application is optimized and free from common Hibernate pitfalls,
     - **Reason:** Disabling `open-in-view` helps prevent the common issue of lazy loading outside of transactions, which
       can lead to unexpected queries being executed. By ensuring that all database interactions happen within a defined
       transactional context, you reduce the risk of N+1 query problems and improve overall performance.
-   - Faster Transaction Completion: Speeds up transactions, saving you those precious milliseconds.
+    - Faster Transaction Completion: Speeds up transactions, saving you those precious milliseconds.
     - **Heads up** If you disable open-in-view and start seeing errors related to data fetching during tests, it's a
       strong indication that your application has N+1 problems.
 
@@ -133,13 +156,12 @@ To ensure your application is optimized and free from common Hibernate pitfalls,
 6. **Prefer Using `FetchType.LAZY` in Relationships**
     - **Avoiding Unnecessary Data Loading**: Often, you don't need to load all related entities when querying a parent
       entity. To retrieve additional information, use the appropriate mechanisms like Fetch Joins or EntityGraphs
-   - **If You still Need `FetchType.EAGER`, You Might Have an N+1 Problem** Need FetchType.EAGER because you’d get an
-     exception outside a transaction? Well, you’ve just invited the N+1 problem!
+    - **If You still Need `FetchType.EAGER`, You Might Have an N+1 Problem** Need FetchType.EAGER because you’d get an
+      exception outside a transaction? Well, you’ve just invited the N+1 problem!
 
 7. **Fetching Exactly What You Need**
     - **Fetch Joins** allow you to load related entities in a single query, preventing the N+1 problem by avoiding
       multiple queries for associations.
-
    ```java
    @Query("SELECT o FROM Order o JOIN FETCH o.customer JOIN FETCH o.orderItems WHERE o.id = :id")
    Order findOrderWithCustomerAndItems(@Param("id") Long id); 
@@ -363,7 +385,7 @@ To ensure your application is optimized and free from common Hibernate pitfalls,
 |                          | HASH                  | Retrieves rows based on a hash cluster key value.                                                             | Medium                |
 |                          | BY ROWID RANGE        | Retrieves rows based on a rowid range.                                                                        | Medium                |
 |                          | SAMPLE BY ROWID RANGE | Retrieves sampled rows based on a rowid range.                                                                | Medium                |
-|                          | BY USER ROWID         | Retrieves rows using userer-supplied rowids.                                                                    | Medium                |
+|                          | BY USER ROWID         | Retrieves rows using userer-supplied rowids.                                                                  | Medium                |
 |                          | BY INDEX ROWID        | Retrieves rows using indexes in a non-partitioned table.                                                      | High                  |
 |                          | BY GLOBAL INDEX ROWID | Retrieves rows using only global indexes in a partitioned table.                                              | High                  |
 |                          | BY LOCAL INDEX ROWID  | Retrieves rows using local and possibly global indexes in a partitioned table.                                | High                  |

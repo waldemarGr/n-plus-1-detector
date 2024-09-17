@@ -20,5 +20,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Import(TransactionalStatisticConfiguration.class)
-public @interface EnableAdditionalHibernateStatistic {
+public @interface EnableNPlus1QueryDetection {
 }

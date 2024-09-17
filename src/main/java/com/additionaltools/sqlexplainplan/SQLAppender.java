@@ -2,6 +2,7 @@ package com.additionaltools.sqlexplainplan;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
+import com.additionaltools.logging.LoggingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +20,12 @@ public class SQLAppender extends AppenderBase<ILoggingEvent> {
     private static final Logger logger = LoggerFactory.getLogger(SQLAppender.class);
     private final String basePath;
     private final Explainer explainer;
+    private final LoggingService loggingService;
 
-    public SQLAppender(String basePath, Explainer explainer) {
+    public SQLAppender(String basePath, Explainer explainer, LoggingService loggingService) {
         this.explainer = explainer;
         this.basePath = basePath;
+        this.loggingService = loggingService;
     }
 
     @Override
@@ -40,10 +43,19 @@ public class SQLAppender extends AppenderBase<ILoggingEvent> {
         }
 
         if (sqlDefinitionHolder.getLast().isCompleted()) {
-            List<Map<String, Object>> oracleExecutionPlans = explainer.explainQuery(sqlDefinitionHolder.getLast().getSqlWithArguments());
-            sqlDefinitionHolder.getLast().explanations().addAll(oracleExecutionPlans);
-            logger.info(sqlDefinitionHolder.getLast().toString());
-            explainer.printTable(oracleExecutionPlans);
+            SqlDefinition last = sqlDefinitionHolder.getLast();
+            List<Map<String, Object>> oracleExecutionPlans = explainer.explainQuery(last.getSqlWithArguments());
+            last.explanations().addAll(oracleExecutionPlans);
+            String printableTable = explainer.getPrintableTable(oracleExecutionPlans);
+
+            String logMessage = String.format(
+                    """
+                            EXECUTION_PLANS:Method '%s' was executed. The associated SQL query, with bound arguments, is: '%s'.\s
+                            %s
+                            """,
+                    last.methodExecution(), last.getSqlWithArguments(), printableTable);
+            logger.info(logMessage);
+            loggingService.addLog(logMessage);
         }
     }
 
@@ -53,38 +65,6 @@ public class SQLAppender extends AppenderBase<ILoggingEvent> {
                 .map(stackTraceElement -> stackTraceElement.getClassName() + ":" + stackTraceElement.getLineNumber())
                 .filter(methodName -> methodName.contains(basePath))
                 .findFirst().orElse("Unknown method");
-    }
-
-    private void printTable(List<Map<String, Object>> tables) {
-        int keyWidth = 20;  // Szerokość kolumny dla klucza
-        StringBuilder logBuilder = new StringBuilder();
-
-        for (int i = 0; i < tables.size(); i++) {
-            Map<String, Object> map = tables.get(i);
-            logBuilder.append("Lvl ").append(i + 1).append("\n");
-            String separator = "+".repeat(keyWidth + 4) + "+";
-            logBuilder.append(separator).append("\n");
-            String header = String.format("| %-" + keyWidth + "s | %s |", "Key", "Value");
-            logBuilder.append(header).append("\n");
-            logBuilder.append(separator).append("\n");
-
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                String key = truncate(entry.getKey(), keyWidth);
-                String value = entry.getValue() != null ? entry.getValue().toString() : "null";
-                String row = String.format("| %-" + keyWidth + "s | %s |", key, value);
-                logBuilder.append(row).append("\n");
-            }
-            logBuilder.append(separator).append("\n\n");
-        }
-
-        logger.info("\n{}", logBuilder);
-    }
-
-    private String truncate(String value, int length) {
-        if (value.length() <= length) {
-            return value;
-        }
-        return value.substring(0, length - 1) + "…";
     }
 }
 

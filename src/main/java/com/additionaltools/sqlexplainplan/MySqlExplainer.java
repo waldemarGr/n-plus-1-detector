@@ -16,7 +16,7 @@ public class MySqlExplainer implements Explainer {
         return jdbcTemplate.queryForList("EXPLAIN %s".formatted(query));
     }
 
-    public void printTable(List<Map<String, Object>> tables) {
+    public String getPrintableTable(List<Map<String, Object>> tables) {
         int keyWidth = 20;
         StringBuilder logBuilder = new StringBuilder();
 
@@ -37,7 +37,7 @@ public class MySqlExplainer implements Explainer {
             }
             logBuilder.append(separator).append("\n\n");
         }
-        logger.info("\n{}", logBuilder);
+        return logBuilder.toString();
     }
 
     private String truncate(String value, int length) {

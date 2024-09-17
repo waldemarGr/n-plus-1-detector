@@ -1,8 +1,11 @@
 package com.additionaltools.nplus1query;
 
+import com.additionaltools.common.EmptyLoggingConfiguration;
+import com.additionaltools.logging.LoggingService;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * Configuration class for automatic bean registration.
@@ -10,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * <p>This configuration class defines beans for {@link SQLStatisticsService} and {@link TransactionAspect}.
  * It provides the necessary setup to integrate these components into the Spring application context.</p>
  */
+@Import(EmptyLoggingConfiguration.class)
 @Configuration
 public class TransactionalStatisticConfiguration {
     /**
@@ -22,8 +26,8 @@ public class TransactionalStatisticConfiguration {
      * @return a configured instance of {@link SQLStatisticsService}
      */
     @Bean
-    public SQLStatisticsService sqlStatisticsService(EntityManagerFactory entityManagerFactory) {
-        return new SQLStatisticsService(entityManagerFactory);
+    public SQLStatisticsService sqlStatisticsService(EntityManagerFactory entityManagerFactory, LoggingService loggingService) {
+        return new SQLStatisticsService(entityManagerFactory, loggingService);
     }
 
     /**
